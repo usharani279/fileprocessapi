@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a0cf6f92-8b52-4302-9f76-27f80ba1adb7" >
+		<http:request-connection host="0.0.0.0" port="8081" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b493e7ae-c9c3-4bd2-8499-f124abb16097" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="f4efa11b-ad8c-49d3-b043-748323e0743c" >
+		<http:request-connection host="0.0.0.0" port="8083" />
+	</http:request-config>
+	<flow name="fileprocessapiFlow" doc:id="7120a725-c9af-4660-b19f-1805432bf1b5" >
+		<http:listener doc:name="Listener" doc:id="11577f5e-3d03-45e5-96e4-b8cb7787de5d" config-ref="HTTP_Listener_config" path="/pr"/>
+		<logger level="INFO" doc:name="Logger" doc:id="48a935f8-545b-45b8-8d2d-47807e1d8b7b" message="#[payload]"/>
+		<http:request method="GET" doc:name="Request" doc:id="b9fc2773-3056-4da6-83af-6a5b10a38606" config-ref="HTTP_Request_configuration" path="/system"/>
+		<ee:transform doc:name="Transform Message" doc:id="194d036b-c6b9-4ff2-892d-c6c90de1479a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="64c37295-c004-45da-8460-e290df8ab77f" config-ref="HTTP_Request_configuration1" path="/dbsys"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0f092086-f42e-40ae-bc28-5f68b4575c44" message='#["succuss msg"]'/>
+	</flow>
+</mule>
